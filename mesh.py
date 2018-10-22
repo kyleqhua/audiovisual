@@ -8,7 +8,7 @@ class Mesh:
     verts = np.array([[0, 0, 0]])
     faces = np.array([[0, 0, 0]])
     colors = np.array([[0, 0, 0, 0]])
-    grid_len = 32
+    grid_len = 10
 
     def __init__(self):
         self.app =  QtGui.QApplication(sys.argv)
@@ -18,37 +18,33 @@ class Mesh:
         self.grid()
         self.pick_facecolor(0)
         self.offSet = 0
-        self.mesh = gl.GLMeshItem(vertexes= self.verts, faces = self.faces, faceColors = self.colors)
+        self.mesh = gl.GLMeshItem(vertexes= self.verts, faces = self.faces, faceColors = self.colors, drawFaces = True,  smooth = True)
         self.mesh.setGLOptions("additive")
         self.view.addItem(self.mesh)
-        #self.animate()
 
 
     def run(self):
-        if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
-	           QtGui.QApplication.instance().exec_()
+        if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):QtGui.QApplication.instance().exec_()
 
     def update(self):
         noise = OpenSimplex()
+        self.verts = []
         for i in range(self.grid_len):
             for j in range(self.grid_len):
-                coord = np.array([[i, j, noise.noise2d(x = i +self.offSet, y = j+self.offSet)]])
-                self.verts = np.append(self.verts, coord, axis=0)
-        for i in range(self.grid_len - 1):
-            for j in range(self.grid_len - 1):
-                cord = np.array([[i * self.grid_len + j, i * self.grid_len + j + 1, i * self.grid_len + j + self.grid_len]])
-                cord2 = np.array([[i * self.grid_len + j + 1, i * self.grid_len + j + self.grid_len, i * self.grid_len + j + self.grid_len + 1]])
-                self.faces = np.append(self.faces, cord, axis=0)
-                self.faces = np.append(self.faces, cord2, axis=0)
-        self.verts = np.delete(self.verts, 0, axis=0)
-        self.faces = np.delete(self.faces, 0, axis=0)
-        self.offSet = self.offSet -.1
-        
+                coord = [[i, j, noise.noise2d(x = i +self.offSet, y = j+self.offSet)]]
+                self.verts.append(coord)
+        self.verts = np.array(self.verts)
+        self.offSet -=  -.1
+        self.mesh.setMeshData(vertexes=self.verts, faces=self.faces, faceColors=self.colors)
+        print(0)
+
+
     def animate(self):
         timer = QtCore.QTimer()
         timer.timeout.connect(self.update)
         timer.start(10)
-        timer.start()
+        self.run()
+        self.update()
 
 
     def cube(self):

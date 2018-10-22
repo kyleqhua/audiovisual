@@ -22,10 +22,12 @@ def grid(grid_len):
     faces = np.delete(faces, 0, axis = 0)
 
     pcolors = np.random.random(size=(faces.shape[0], 1, 4))
-    print(pcolors[0])
-    print(len(pcolors), len(faces))
+   # print(pcolors[0])
+   # print(len(pcolors), len(faces))
     colors = np.array([[0, 0, 0, 0]])
     for i in range(len(faces)):
         c = np.array([[0, 0, 1, 1]])
         colors = np.append(colors, c, axis=0)
     colors = np.delete(colors, 0, axis=0)
+    colors = np.empty((len(faces), 1, 4), dtype=np.float32)
+    print(colors)
